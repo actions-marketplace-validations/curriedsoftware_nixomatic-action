@@ -24,8 +24,27 @@ This action uses [nixomatic.com](https://nixomatic.com) to generate Nix flakes o
 ## Package Formats
 
 - `package` - Latest from nixos-unstable (e.g., `jq`, `ripgrep`)
-- `package@version` - Specific version resolved via [nxv](https://nxv.urandom.io) (e.g., `python3@3.13.1`)
+- `package@version` - Specific version resolved against [nixpkgs-multiverse](https://github.com/fzakaria/nixpkgs-multiverse) (e.g., `python3@3.13.1`)
 - `package:revision` - Exact nixpkgs commit hash (e.g., `python3:3b93cf5abc123`)
+
+Only versions the index actually has can be pinned, and an unknown one fails the
+workflow at evaluation time. Check what a package can be pinned to before using
+`@version`:
+
+```console
+$ curl -s 'https://nixomatic.com/versions?p=nodejs'
+{"nodejs": ["0.10.21", "0.12.7", "…", "24.18.1"]}
+```
+
+The answer is always an object keyed by the spec as it was asked for, whether
+one package was requested or many, and each list is ordered oldest first.
+Asking about a revision instead gives the single version that revision ships,
+or `null` when it ships none:
+
+```console
+$ curl -s 'https://nixomatic.com/versions?p=nodejs:6a55e4c'
+{"nodejs:6a55e4c": "20.15.1"}
+```
 
 ## Examples
 
