@@ -9,7 +9,7 @@ This action uses [nixomatic.com](https://nixomatic.com) to generate Nix flakes o
 ```yaml
 - uses: curriedsoftware/nixomatic-action@main
   with:
-    packages: python3@3.13.1 nodejs@24.13.0 jq
+    packages: python3@3.13.4 nodejs@24.13.0 jq
     run: python --version
 ```
 
@@ -24,8 +24,8 @@ This action uses [nixomatic.com](https://nixomatic.com) to generate Nix flakes o
 ## Package Formats
 
 - `package` - Latest from nixos-unstable (e.g., `jq`, `ripgrep`)
-- `package@version` - Specific version resolved against [nixpkgs-multiverse](https://github.com/fzakaria/nixpkgs-multiverse) (e.g., `python3@3.13.1`)
-- `package:revision` - Exact nixpkgs commit hash (e.g., `python3:3b93cf5abc123`)
+- `package@version` - Specific version resolved against [nixpkgs-multiverse](https://github.com/fzakaria/nixpkgs-multiverse) (e.g., `python3@3.13.4`)
+- `package:revision` - Exact nixpkgs commit hash (e.g., `python3:3b93cf5`)
 
 Only versions the index actually has can be pinned, and an unknown one fails the
 workflow at evaluation time. Check what a package can be pinned to before using
@@ -33,17 +33,24 @@ workflow at evaluation time. Check what a package can be pinned to before using
 
 ```console
 $ curl -s 'https://nixomatic.com/versions?p=nodejs'
-{"nodejs": ["0.10.21", "0.12.7", "…", "24.18.1"]}
+{"nodejs":["0.10.21","0.12.7","…","24.18.1"]}
 ```
 
 The answer is always an object keyed by the spec as it was asked for, whether
-one package was requested or many, and each list is ordered oldest first.
-Asking about a revision instead gives the single version that revision ships,
-or `null` when it ships none:
+one package was requested or many, and each list is ordered oldest first — an
+empty one when the package is not in the index at all:
+
+```console
+$ curl -s 'https://nixomatic.com/versions?p=jq,hello'
+{"hello":["2.8","…","2.12.3"],"jq":["1.3","…","1.8.2"]}
+```
+
+Asking about a revision instead gives the one version that revision ships, or
+`null` when it ships none:
 
 ```console
 $ curl -s 'https://nixomatic.com/versions?p=nodejs:6a55e4c'
-{"nodejs:6a55e4c": "20.15.1"}
+{"nodejs:6a55e4c":"20.15.1"}
 ```
 
 ## Examples
@@ -69,7 +76,7 @@ steps:
   - uses: actions/checkout@v4
   - uses: curriedsoftware/nixomatic-action@main
     with:
-      packages: python3@3.13.1 nodejs@24.13.0
+      packages: python3@3.13.4 nodejs@24.13.0
       run: |
         python3 --version
         node --version
