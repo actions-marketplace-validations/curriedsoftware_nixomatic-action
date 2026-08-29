@@ -10,9 +10,11 @@ inputs:
       Packages to install (space or comma-separated string).
       Supported formats:
         - package         (latest from nixos-unstable)
-        - package@version (resolved via nxv API)
+        - package@version (resolved against the nixpkgs-multiverse index nixomatic pins;
+                           list what can be pinned with
+                           curl -s 'https://nixomatic.com/versions?p=<package>')
         - package:rev     (exact nixpkgs revision)
-      Example: "python3@3.13.11 nodejs@24.13.0 jq" or "python3@3.13.11, nodejs@24.13.0, jq"
+      Example: "python3@3.13.4 nodejs@24.13.0 jq" or "python3@3.13.4, nodejs@24.13.0, jq"
     required: true
   install-nix:
     description: "Whether to install Nix. Set to false if Nix is already available."
